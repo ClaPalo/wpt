@@ -130,6 +130,11 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     # flag is no-op. Required to avoid flakiness in tests, as the infobar
     # changes the viewport, which can happen during the test run.
     chrome_options["args"].append("--disable-infobars")
+    #! Enable extension to run tests locally
+    chrome_options["args"].append("--load-extension=" + "/Users/claudio/Thesis/extension-intercept/")
+    
+    #! Use with older versions of Chrome
+    # chrome_options["args"].append("--no-headless")
     # For WebNN tests.
     chrome_options["args"].append("--enable-features=WebMachineLearningNeuralNetwork")
 
@@ -179,10 +184,10 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data, subsuite
     # Pass the --headless=new flag to Chrome if WPT's own --headless flag was
     # set. '--headless' should always mean the new headless mode, as the old
     # headless mode is not used anyway.
-    if kwargs["headless"] and ("--headless=new" not in chrome_options["args"] and
-                               "--headless=old" not in chrome_options["args"] and
-                               "--headless" not in chrome_options["args"]):
-        chrome_options["args"].append("--headless=new")
+    # if kwargs["headless"] and ("--headless=new" not in chrome_options["args"] and
+    #                            "--headless=old" not in chrome_options["args"] and
+    #                            "--headless" not in chrome_options["args"]):
+    #     chrome_options["args"].append("--headless=new")
 
     if test_type == "wdspec":
         executor_kwargs["binary_args"] = chrome_options["args"]

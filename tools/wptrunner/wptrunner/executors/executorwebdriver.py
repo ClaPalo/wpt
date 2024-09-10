@@ -756,7 +756,9 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             self.protocol.testharness.load_runner(new_environment["protocol"])
 
     def do_test(self, test):
-        url = self.test_url(test)
+        # url = self.test_url(test)
+        url = "file:///Users/claudio/Thesis/my-electron-app-2" + test.url
+        self.logger.debug("Running test %s" % url)
 
         success, data = WebDriverRun(self.logger,
                                      self.do_testharness,
