@@ -749,6 +749,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
         self.close_after_done = close_after_done
         self.window_id = str(uuid.uuid4())
         self.cleanup_after_test = cleanup_after_test
+        self.kwargs = kwargs
 
     def is_alive(self):
         return self.protocol.is_alive()
@@ -758,7 +759,10 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             self.protocol.testharness.load_runner(new_environment["protocol"])
 
     def do_test(self, test):
-        url = self.test_url(test)
+        if self.kwargs["local_files_path"] is None:
+            url = self.test_url(test)
+        else:
+            url = "file://" + os.path.normpath(self.kwargs["local_files_path"] + test.url)
 
         success, data = WebDriverRun(self.logger,
                                      self.do_testharness,

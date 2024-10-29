@@ -287,6 +287,8 @@ scheme host and port.""")
     config_group.add_argument("--no-suppress-handler-traceback", action="store_false",
                               dest="supress_handler_traceback",
                               help="Write the stacktrace for exceptions in server handlers")
+    config_group.add_argument("--local-files-path", action="store", dest="local_files_path",
+                              help="Path to local files directory")
 
     build_type = parser.add_mutually_exclusive_group()
     build_type.add_argument("--debug-build", dest="debug", action="store_true",
@@ -650,6 +652,11 @@ def check_args(kwargs):
     if kwargs["binary"] is not None:
         if not os.path.exists(kwargs["binary"]):
             print("Binary path %s does not exist" % kwargs["binary"], file=sys.stderr)
+            sys.exit(1)
+    
+    if kwargs["local_files_path"] is not None:
+        if not os.path.exists(kwargs["local_files_path"]):
+            print("Local files path %s does not exist" % kwargs["local_files_path"], file=sys.stderr)
             sys.exit(1)
 
     if kwargs["ssl_type"] is None:
