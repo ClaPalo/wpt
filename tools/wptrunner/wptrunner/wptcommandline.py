@@ -176,6 +176,11 @@ scheme host and port.""")
                                       help="Enable tests that require WebTransport over HTTP/3 server (default: false)")
     test_selection_group.add_argument("--no-enable-webtransport-h3", action="store_false", dest="enable_webtransport_h3",
                                       help="Do not enable WebTransport tests on experimental channels")
+    test_selection_group.add_argument("--local-files-path", type=abs_path,
+                                      help="Path to a local folder containing testharness test files. "
+                                           "When provided and the browser uses webdriver and the test is "
+                                           "of type testharness, the test URL will be modified to use "
+                                           "the file:// scheme with this path.")
     test_selection_group.add_argument("--tag", action="append", dest="tags",
                                       help="Labels applied to tests to include in the run. "
                                            "Labels starting dir: are equivalent to top-level directories.")

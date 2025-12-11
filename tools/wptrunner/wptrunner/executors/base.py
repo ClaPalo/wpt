@@ -31,7 +31,8 @@ def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwar
                        "timeout_multiplier": timeout_multiplier,
                        "debug_info": kwargs["debug_info"],
                        "subsuite": subsuite.name,
-                       "target_platform": run_info_data["os"]}
+                       "target_platform": run_info_data["os"],
+                       "local_files_path": kwargs.get("local_files_path")}
 
     if test_type in ("reftest", "print-reftest"):
         executor_kwargs["screenshot_cache"] = test_environment.cache_manager.dict()
@@ -276,7 +277,7 @@ class TestExecutor:
 
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
-                 debug_info=None, subsuite=None, **kwargs):
+                 debug_info=None, subsuite=None, local_files_path=None, **kwargs):
         self.logger = logger
         self.runner = None
         self.browser = browser
@@ -284,6 +285,7 @@ class TestExecutor:
         self.timeout_multiplier = timeout_multiplier
         self.debug_info = debug_info
         self.subsuite = subsuite
+        self.local_files_path = local_files_path
         self.last_environment = {"protocol": "http",
                                  "prefs": {}}
         self.protocol = None  # This must be set in subclasses
@@ -337,8 +339,17 @@ class TestExecutor:
         return server_url(self.server_config, protocol, subdomain)
 
     def test_url(self, test):
-        return urljoin(self.server_url(test.environment["protocol"],
-                                       test.subdomain), test.url)
+        # Check if we should use local files path for testharness tests with webdriver
+        if (self.local_files_path is not None and
+            test.test_type == "testharness" and
+            'Driver' in self.__class__.__name__):
+            # Use file:// scheme with the local files path
+            file_url = f"file://{os.path.join(self.local_files_path, test.url.lstrip('/'))}"
+            return file_url
+        else:
+            # Use the default server URL construction
+            return urljoin(self.server_url(test.environment["protocol"],
+                                           test.subdomain), test.url)
 
     @abstractmethod
     def do_test(self, test):
